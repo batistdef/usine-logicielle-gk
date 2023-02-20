@@ -38,13 +38,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # - HOST SETTINGS -
       node.vm.hostname = host['name']
       node.vm.network :private_network, ip: host['ip']
-      node.disksize.size = host['size']
       node.vm.box = host['os'] 
 
       # - PROVISION -
       if host['provisioner'] == 'shell'
         node.vm.provision "shell",privileged: true, path: host['playbook']
-      else
+      elsif host['provisioner'] == 'ansible'
         node.vm.provision "ansible" do |ansible|
           ansible.playbook = host['playbook']
           ansible.verbose = "True"
