@@ -33,12 +33,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box_check_update = false
   config.vbguest.auto_update = false
 
+  $script_inject_pk =<<-'SCRIPT'
+    cat /vagrant/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys
+  SCRIPT
+
   hosts.each do |host|
     config.vm.define host['name'] do |node|
       # - HOST SETTINGS -
       node.vm.hostname = host['name']
       node.vm.network :private_network, ip: host['ip']
       node.vm.box = host['os'] 
+
+      node.vm.provision "shell", inline: $script_inject_pk
 
       # - PROVISION -
       if host['provisioner'] == 'shell'
