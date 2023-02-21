@@ -31,11 +31,10 @@
 
   - name: Create artifactory service
     copy: 
-      src: /vagrant/provisioning/resources/artifactory.service
+      src: ./resources/artifactory.service
       dest: /etc/systemd/system/artifactory.service
       owner: root
       group: root
-      remote_src: true
 
   - name: Create artifactory container volume folder
     file:
