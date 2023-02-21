@@ -50,7 +50,7 @@
       enabled: true
 
   - name: Installer cadvisor
-    include: includes/cadvisor.yml
+    include_tasks: includes/cadvisor.yml
 
   roles:
   - role: "roles/geerlingguy.jenkins"
