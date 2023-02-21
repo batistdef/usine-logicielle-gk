@@ -16,9 +16,11 @@
       state: present
       update_cache: yes
 
-  - name: Install nginx
+  - name: Install nginx and selinux python module
     yum:
-      name: nginx
+      name:
+        - nginx
+        - policycoreutils-python
       state: present
       update_cache: yes
 
@@ -29,10 +31,10 @@
       owner: root
 
   - name: Disable SELinux protection for nginx
-      ansible.posix.seboolean:
-        name: "httpd_can_network_connect"
-        state: "1"
-        persistent: true
+    seboolean:
+      name: "httpd_can_network_connect"
+      state: "1"
+      persistent: true
   
   - name: Run nginx and enable it
     service:
