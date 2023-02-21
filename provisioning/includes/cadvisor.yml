@@ -1,0 +1,18 @@
+---
+- name: Install and run CAdvisor as a service
+  hosts: all
+
+  tasks:
+  - name: Create cadvisor service
+    copy: 
+      src: ./resources/cadvisor.service
+      dest: /etc/systemd/system/cadvisor.service
+      owner: root
+      group: root
+
+  - name: Run cadvisor service
+    systemd:
+      name: cadvisor
+      state: started
+      daemon-reload: true
+      enabled: true
