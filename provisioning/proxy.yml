@@ -24,10 +24,15 @@
 
   - name: Copy nginx configuration
     copy:
-      src: /vagrant/provisioning/resources/nginx-reverseproxy.conf
+      src: ./resources/nginx-reverseproxy.conf
       dest: /etc/nginx/conf.d/nginx-reverseproxy.conf
       owner: root
-      remote_src: true
+
+  - name: Disable SELinux protection for nginx
+      ansible.posix.seboolean:
+        name: "httpd_can_network_connect"
+        state: "1"
+        persistent: true
   
   - name: Run nginx and enable it
     service:
