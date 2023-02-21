@@ -56,3 +56,4 @@
   - role: "roles/geerlingguy.docker"
     vars:
       docker_users: ["vagrant"]
+  - role: "roles/geerlingguy.node_exporter"
