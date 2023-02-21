@@ -6,7 +6,7 @@ After=network.target
 Restart=always
 ExecStartPre=-/usr/bin/docker kill cadvisor
 ExecStartPre=-/usr/bin/docker rm cadvisor
-ExecStart=/usr/bin/docker run --volume=/:/rootfs:ro --volume=/var/run:/var/run:rw --volume=/sys:/sys:ro --volume=/var/lib/docker/:/var/lib/docker:ro --publish=9200:8080 --detach=true --name=cadvisor gcr.io/cadvisor/cadvisor:v0.47.0
+ExecStart=/usr/bin/docker run --volume=/:/rootfs:ro --volume=/var/run:/var/run:rw --volume=/sys:/sys:ro --volume=/var/lib/docker/:/var/lib/docker:ro --publish=9200:8080 --privileged=true --detach=true --name=cadvisor gcr.io/cadvisor/cadvisor:v0.47.0
 ExecStop=-/usr/bin/docker kill cadvisor
 ExecStop=-/usr/bin/docker rm cadvisor
 
