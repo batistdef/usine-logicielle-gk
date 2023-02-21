@@ -14,5 +14,10 @@
       name: vim
       state: present
 
+  - name: Install maven
+    yum:
+      name: maven
+      state: present
+
   roles:
   - role: "roles/geerlingguy.java"

@@ -1,0 +1,59 @@
+- name: Install and configure the Jenkins machine
+  become: yes
+  hosts: ci-server
+
+  pre_tasks:
+  - name: refresh certificates
+    yum:
+      name: ca-certificates
+      state: latest
+      update_cache: yes
+  - name: Install java 11
+    yum:
+      name: java-11-openjdk-devel
+      state: present
+  - name: Install unzip
+    yum:
+      name: unzip
+      state: present
+  
+  tasks:
+  - name: Install git
+    yum:
+      name: git
+      state: present
+      update_cache: yes
+
+  - name: Install maven
+    yum:
+      name: maven
+      state: present
+
+  - name: Create artifactory service
+    copy: 
+      src: /vagrant/provisioning/resources/artifactory.service
+      dest: /etc/systemd/system/artifactory.service
+      owner: root
+      group: root
+      remote_src: true
+
+  - name: Create artifactory container volume folder
+    file:
+      path: /jfrog/artifactory
+      state: directory
+      owner: '1030'
+
+  - name: Run artifactory service
+    systemd:
+      name: artifactory
+      state: started
+      daemon-reload: true
+      enabled: true
+
+
+  roles:
+  - role: "roles/geerlingguy.jenkins"
+  - role: "roles/geerlingguy.sonar"
+  - role: "roles/geerlingguy.docker"
+    vars:
+      docker_users: ["vagrant"]

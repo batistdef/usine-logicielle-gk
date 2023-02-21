@@ -43,6 +43,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       node.vm.hostname = host['name']
       node.vm.network :private_network, ip: host['ip']
       node.vm.box = host['os'] 
+      node.hostmanager.aliases = host['aliases']
 
       node.vm.provision "shell", inline: $script_inject_pk
 
@@ -52,7 +53,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       elsif host['provisioner'] == 'ansible'
         node.vm.provision "ansible" do |ansible|
           ansible.playbook = host['playbook']
-          ansible.verbose = "True"
+          ansible.verbose = "False"
         end
       end
 
