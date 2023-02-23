@@ -49,6 +49,14 @@
       daemon-reload: true
       enabled: true
 
+  - name: Copy ssh private key to user vagrant
+    copy: 
+      src: ./resources/id_rsa
+      dest: /home/vagrant/.ssh/id_rsa
+      owner: vagrant
+      group: vagrant
+      mode: 600
+
   roles:
   - role: "roles/geerlingguy.jenkins"
   - role: "roles/geerlingguy.sonar"
