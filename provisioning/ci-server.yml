@@ -49,9 +49,6 @@
       daemon-reload: true
       enabled: true
 
-  - name: Installer cadvisor
-    include_tasks: includes/cadvisor.yml
-
   roles:
   - role: "roles/geerlingguy.jenkins"
   - role: "roles/geerlingguy.sonar"
@@ -59,3 +56,4 @@
     vars:
       docker_users: ["vagrant"]
   - role: "roles/geerlingguy.node_exporter"
+  - role: "roles/ome.cadvisor"

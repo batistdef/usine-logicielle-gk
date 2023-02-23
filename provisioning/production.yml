@@ -8,13 +8,10 @@
       name: ca-certificates
       state: latest
       update_cache: yes
-  
-  tasks:
-  - name: Installer cadvisor
-    include_tasks: includes/cadvisor.yml
 
   roles:
   - role: "roles/geerlingguy.docker"
     vars:
       docker_users: ["vagrant"]
   - role: "roles/geerlingguy.node_exporter"
+  - role: "roles/ome.cadvisor"
