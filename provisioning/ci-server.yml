@@ -62,6 +62,6 @@
   - role: "roles/geerlingguy.sonar"
   - role: "roles/geerlingguy.docker"
     vars:
-      docker_users: ["vagrant"]
+      docker_users: ["vagrant", "jenkins"]
   - role: "roles/geerlingguy.node_exporter"
   - role: "roles/ome.cadvisor"
