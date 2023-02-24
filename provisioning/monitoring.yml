@@ -33,3 +33,9 @@
           - production:9100
           labels:
             env: infra
+        cadvisor:
+        - targets:
+          - ci-server:8080
+          - staging:8080
+          labels:
+            env: docker

@@ -1,4 +1,4 @@
-- name: Install and configure the Production machine
+- name: Install and configure the production machine
   become: yes
   hosts: production
 
@@ -16,11 +16,67 @@
       line: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC0TxkzwaQ3VF39WVQLMEua6F2zaUsJiuaWZJhBxYZrquBTCWt7dDlBNQa3gB5LI/43qeyXxf0Hqios2sqqp/OVKGglOTRlvrk/3cJPCaMaZkrfW0uGJnfbIdU81Xr5YE6B6uFOZY0zXDA3gFFsKpmrVcVjRAFyHgi7nk3BbcLHoVIffnTMKKmqg7uEDSwtB5o5eoYNTFaFHWBuqQRGTSFhPIqzsvEtJZcb7JIyUY+qLWCBzVONGLLeXlbxxWAg1idOrs3gllaDViysaTyPNJeC4zB/Zh8nXAsNvaYpbAbIo28OpA5Ns9ad7mpkXiHXJpgjgbgtOmmLG0qQezrdUHHMO8BjJtntmJucyAtuZjHCymP7O9wWlZVAKpNkOX3hjXkysJhWVoI6PZkAgB3kCshYaiwCqJ4qZBYD8vRzqaU07j5WMcceyedCjGvHPVcMB+8PP1xEWXLrVGNO/WBvYmZNr3Sg0uJMbiXuxVjXuk/KwcBel5CQkKLT4LlvQcW+dg9rtw+x5P1wzhGC8nMEsHDahHZ1lWwJnH3y5R6xDHAa47ULIbl9FVNe1aOb3FdoRDXz0cVWzdoILbfewKyenFncw6Exwh36BcDF/WwG6u3UhJDR2ZrbbwZy03Npovr/I/aGSkJ/5zog8zkV+D0Ajel186hm/wQNsOj1W+49cdn71Q== vagrant@ci-server"
       state: present
       backup: yes
-     register: example2out
+    
+  - name: install Utilities
+    yum:
+      name:
+      - unzip
+      - wget
+  - name: install Java
+    yum:
+      name: 
+      - "{{java_package}}"
+  - name: check tomcat is installed
+    stat:
+      path: "{{tomcat_home}}"
+    register: tomcat
 
+  - name: install tomcat block
+    when: not tomcat.stat.exists
+    block:  
+    - name: download and uncompress tomcat
+      unarchive:
+        src: https://dlcdn.apache.org/tomcat/tomcat-8/v{{tomcat_version}}/bin/apache-tomcat-{{tomcat_version}}.tar.gz
+        dest: /opt/
+        remote_src: yes
+        validate_certs: false
+    - name: rename sonartomcatqube folder
+      command: 
+        cmd: "mv apache-tomcat-{{tomcat_version}} tomcat"
+        chdir: "/opt/"
+    - name: configure applications context
+      copy:
+        src: files/tomcat-context.xml
+        dest: "{{item}}"
+      loop:
+      - "{{tomcat_home}}/webapps/manager/META-INF/context.xml"
+      - "{{tomcat_home}}/webapps/host-manager/META-INF/context.xml"
+    - name: configure tomcat users
+      copy:
+        src: files/tomcat-users.xml
+        dest: "{{tomcat_home}}/conf/tomcat-users.xml"
+    - name: create tomcat service
+      copy:
+        src: files/tomcat.service
+        dest: /etc/systemd/system/tomcat.service
+    - name: create tomcat user
+      user:
+        name: tomcat
+        shell: /bin/false
+        home: "{{tomcat_home}}/"
+    - name: change ownership of the tomcat home
+      file:
+        path: "{{tomcat_home}}"
+        owner: tomcat
+        group: tomcat
+        recurse: yes
+        state: directory
+    - name: start and enable tomcat
+      systemd:
+        daemon_reload: yes
+        name: tomcat
+        state: started
+        enabled: true
+     
   roles:
-  - role: "roles/geerlingguy.docker"
-    vars:
-      docker_users: ["vagrant"]
   - role: "roles/geerlingguy.node_exporter"
-  - role: "roles/ome.cadvisor"
