@@ -57,6 +57,11 @@
       group: vagrant
       mode: 600
 
+- name: Restart jenkins service
+    systemd:
+      name: jenkins
+      state: restarted
+
   roles:
   - role: "roles/geerlingguy.jenkins"
   - role: "roles/geerlingguy.sonar"
