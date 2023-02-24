@@ -57,7 +57,7 @@
       group: vagrant
       mode: 600
 
-- name: Restart jenkins service
+  - name: Restart jenkins service
     systemd:
       name: jenkins
       state: restarted
